@@ -2,13 +2,17 @@ defmodule Philter.Spotify do
 
   @process Philter.Spotify.Query
   @supervisor Philter.Spotify.Supervisor
+  @ngrok_url "http://tkb.ngrok.io/twiml?song="
+
+  alias ExTwilio
 
   def start_link(proc, song, twilio_data, query_ref, owner) do
     proc.start_link(song, twilio_data, query_ref, owner)
   end
 
   def search(song, twilio_data) do
-    spawn_search(song, twilio_data)
+    song
+    |> spawn_search(twilio_data)
     |> await_results
   end
 
@@ -28,7 +32,7 @@ defmodule Philter.Spotify do
     results
   end
 
-  defp await_result(query_process, result, _timeout) do
+  defp await_result(query_process, _result, _timeout) do
     {pid, monitor_ref, query_ref} = query_process
 
     receive do
@@ -46,13 +50,26 @@ defmodule Philter.Spotify do
   end
 
   defp notify_success(nil, %{from: from, to: to}) do
-    ExTwilio.Message.create([From: to, To: from, Body: "Sorry, I couldn't find your song on Spotify"])
+    ExTwilio.Message.create([
+      From: to,
+      To: from,
+      Body: "Sorry, I couldn't find your song on Spotify"
+    ])
   end
 
 
   defp notify_success(preview_url, %{from: from, to: to}) do
-    ExTwilio.Message.create([From: to, To: from, Body: "Your clip is on the way!"])
-    ExTwilio.Call.create([From: to, To: from, Url: "http://tkb.ngrok.io/twiml?song=#{URI.encode_www_form(preview_url)}" ])
+    ExTwilio.Message.create([
+      From: to,
+      To: from,
+      Body: "Your clip is on the way!"
+    ])
+
+    ExTwilio.Call.create([
+      From: to,
+      To: from,
+      Url: @ngrok_url <> "#{URI.encode_www_form(preview_url)}"
+    ])
   end
 
   defp kill(pid, ref) do

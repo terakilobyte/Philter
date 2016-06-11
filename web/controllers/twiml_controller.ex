@@ -1,10 +1,7 @@
 defmodule Philter.TwimlController do
   use Philter.Web, :controller
 
-  alias Philter.Twiml
-
   def index(conn, _params) do
-    IO.inspect(get_in(conn.params, ["song"]))
     song =
       conn.params
       |> get_and_decode_song_request

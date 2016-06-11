@@ -34,6 +34,7 @@ defmodule Philter.Mixfile do
      {:gettext, "~> 0.9"},
      {:ibrowse, "~> 4.2", [hex: :ibrowse, optional: false, override: true]},
      {:ex_twilio, "~> 0.1.8"},
+     {:credo, "~> 0.4", only: [:dev, :test]},
      {:cowboy, "~> 1.0"}]
   end
 end

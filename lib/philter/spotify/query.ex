@@ -1,5 +1,7 @@
 defmodule Philter.Spotify.Query do
 
+  @spotify_url "https://api.spotify.com/v1/search?type=track&q="
+
   def start_link(song, twilio_data, query_ref, owner) do
     Task.start_link(__MODULE__, :fetch, [song, twilio_data, query_ref, owner])
   end
@@ -25,7 +27,8 @@ defmodule Philter.Spotify.Query do
   end
 
   defp fetch_from_spotify(query_str) do
-    %{:body => response} = HTTPotion.get("https://api.spotify.com/v1/search?type=track&q=" <> URI.encode(query_str))
+    %{:body => response} =
+      HTTPotion.get(@spotify_url <> URI.encode(query_str))
     {:ok, body} = Poison.decode(response)
     body
     |> get_in(["tracks", "items"])

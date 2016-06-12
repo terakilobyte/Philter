@@ -2,6 +2,8 @@
 
 A little application that handles texting a song title to a Twilio number, looks up a song on the Spotify API, and then calls you back with a song clip.
 
+It uses ExTwilio to interface with the Twilio API.
+
 To start your Phoenix app:
 
   * Install dependencies with `mix deps.get`
